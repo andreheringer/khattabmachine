@@ -9,20 +9,20 @@ CFLAGS = -Wall
 # Parametros de Projeto
 
 # TODO: altere a lista de forma que contenha todos os arquivos .c 
-#       do seu projeto, que deve estar no diretório src/emulador
-SRC_EMULADOR = main.c loader.c emu.c
+#       do seu projeto, que deve estar no diretório src/emulator
+SRC_EMULATOR = main.c loader.c emu.c
 
-OBJS_EMULADOR = $(SRC_EMULADOR:%.c=build/emulador/%.o)
+OBJS_EMULATOR = $(SRC_EMULATOR:%.c=build/emulator/%.o)
 
-SRC_MONTADOR = main.c assembler.c
+SRC_ASSEMBLER = main.c assembler.c
 
-OBJS_MONTADOR = $(SRC_MONTADOR:%.c=build/montador/%.o)
+OBJS_ASSEMBLER = $(SRC_ASSEMBLER:%.c=build/assembler/%.o)
 
-all: bin/montador
+assembler: bin/assembler
 
-bin/montador: $(OBJS_MONTADOR)
+bin/assembler: $(OBJS_ASSEMBLER)
 	@echo "+ Compilando programa \"$@\""
-	@$(CC) $(CFLAGS) $(OBJS_MONTADOR) -o bin/montador
+	@$(CC) $(CFLAGS) $(OBJS_ASSEMBLER) -o bin/assembler
 
 
 # Objetos
@@ -40,20 +40,20 @@ build/%.o: src/%.c
 
 # Executaveis
 
-emulador: bin/emulador
+emulator: bin/emulator
 
-bin/emulador: $(OBJS_EMULADOR)
+bin/emulator: $(OBJS_EMULATOR)
 	@echo "+ Compilando programa \"$@\""
-	@$(CC) $(CFLAGS) $(OBJS_EMULADOR) -o bin/emulador
+	@$(CC) $(CFLAGS) $(OBJS_EMULATOR) -o bin/emulator
 
 
 # Objetos
 
-build/%.o: src/emulador/%.c src/emulador/%.h
+build/%.o: src/emulator/%.c src/emulator/%.h
 	@echo "- Compilando objeto \"$@\""
 	@$(CC) -c $(CFLAGS) $< -o $@
 
-build/%.o: src/emulador/%.c
+build/%.o: src/emulator/%.c
 	@echo "- Compilando objeto \"$@\""
 	@$(CC) -c $(CFLAGS) $< -o $@
 
@@ -61,4 +61,4 @@ build/%.o: src/emulador/%.c
 # Auxiliares
 
 clean:
-	rm -f bin/* $(OBJS_EMULADOR)
+	rm -f bin/*
