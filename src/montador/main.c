@@ -20,12 +20,13 @@ int main(int argc, char const *argv[])
     fclose(input_file);
     fclose(output_file);
     
-    for(int i = 0; i < 1000; i++)
-    {
-        if (strcmp(table[i], "#")) {
-            printf("label: %s\t pc: %d\n", table[i], i);
+    
+    if (!(strcmp(argv[3], "v"))) {
+        for(int i = 0; i < 1000; i++) {
+            if (strcmp(table[i], "#")) {
+                printf("label: %s\t pc: %d\n", table[i], i);
+            }
         }
-
     }
     
     return 0;

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "assembler.h"
 
 const char instructions[23][6] = {
@@ -47,6 +48,17 @@ void deleteComment (char* myStr)
     return;
 }
 
+int commentLine(char* myStr)
+{
+    char *str = &myStr[0];
+    
+    while(str < myStr && !isspace(*str)) {
+        if(*str == ';') {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 char** look_for_symbols(FILE* input_stream)
 {
@@ -68,7 +80,7 @@ char** look_for_symbols(FILE* input_stream)
         
         deleteComment(line_buffer);    
         
-        if (line_buffer[0] == '\0' || strspn(line_buffer, " \r\n\t") == strlen(line_buffer)) {
+        if (line_buffer[0] == '\0' || commentLine(line_buffer)) {
             continue;
         }
 
@@ -94,6 +106,13 @@ void single_arg_command(int PC, char* command, char* arg1,
     int is_regis = 0;
 
     for(int i = 0; i < 23; i++) {
+
+        
+        if (strcmp(command, instructions[22]) == 0) {
+            fprintf(output_stream, "%d\n", atoi(arg1));
+            return;
+        }
+
         if(strcmp(command, instructions[i]) == 0) {
             fprintf(output_stream, "%d\n", i);
         }
@@ -122,12 +141,14 @@ void double_arg_command(int PC, char* command, char* arg1, char* arg2,
     for(int i = 0; i < 23; i++) {
         if(strcmp(command, instructions[i]) == 0) {
             fprintf(output_stream, "%d\n", i);
+            break;
         }
     }
 
     for(int i = 0; i < 8; i++) {
         if(strcmp(arg1, regs[i]) == 0) {
             fprintf(output_stream, "%d\n", i);
+            break;
         }
     }
 
@@ -141,13 +162,17 @@ void double_arg_command(int PC, char* command, char* arg1, char* arg2,
 
     if(is_regis == 0) {
         for(int i = 0; i < 1000; i++) {
-            if (strcmp(arg2, symbols[i]) == 0) {
+            if (strcmp(arg2, symbols[i]) == 0){
+                
+                if (strcmp(command, instructions[16]) == 0 || 
+                    strcmp(command, instructions[15]) == 0) {
+                    fprintf(output_stream, "%d\n", i - PC);
+                    return;
+                }
                 fprintf(output_stream, "%d\n", i);
-                return;        
-            }
+                return;
+            }     
         }
-        
-        fprintf(output_stream, "%d\n", atoi(arg2));
     }
 }
 
@@ -165,7 +190,7 @@ void assemble(FILE* input_stream, FILE* output_stream, char** symbols)
         
         deleteComment(line_buffer);
         
-        if (line_buffer[0] == '\0' || strspn(line_buffer, " \r\n\t") == strlen(line_buffer)) {
+        if (line_buffer[0] == '\0' || strspn(line_buffer, " \r\n\t") == strlen(line_buffer) || line_buffer[0] == ';') {
             continue;
         }
         
@@ -190,10 +215,10 @@ void assemble(FILE* input_stream, FILE* output_stream, char** symbols)
             pc_increment = sscanf(line_buffer,"%s %s %s", command, arg1, arg2);
             
             if(pc_increment == 1) {
-                if(strcmp(command, symbols[0]) == 0) {
+                if(strcmp(command, instructions[0]) == 0) {
                     return;
                 }
-                else if(strcmp(command, symbols[21]) == 0) {
+                else if(strcmp(command, instructions[21]) == 0) {
                     fprintf(output_stream, "21\n");
                 }
             }

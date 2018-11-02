@@ -14,14 +14,15 @@ SRC_EMULADOR = main.c loader.c emu.c
 
 OBJS_EMULADOR = $(SRC_EMULADOR:%.c=build/emulador/%.o)
 
+SRC_MONTADOR = main.c assembler.c
 
-# Executaveis
+OBJS_MONTADOR = $(SRC_MONTADOR:%.c=build/montador/%.o)
 
-all: bin/emulador
+all: bin/montador
 
-bin/emulador: $(OBJS_EMULADOR)
+bin/montador: $(OBJS_MONTADOR)
 	@echo "+ Compilando programa \"$@\""
-	@$(CC) $(CFLAGS) $(OBJS_EMULADOR) -o bin/emulador
+	@$(CC) $(CFLAGS) $(OBJS_MONTADOR) -o bin/montador
 
 
 # Objetos
@@ -31,6 +32,28 @@ build/%.o: src/%.c src/%.h
 	@$(CC) -c $(CFLAGS) $< -o $@
 
 build/%.o: src/%.c
+	@echo "- Compilando objeto \"$@\""
+	@$(CC) -c $(CFLAGS) $< -o $@
+
+#
+
+
+# Executaveis
+
+emulador: bin/emulador
+
+bin/emulador: $(OBJS_EMULADOR)
+	@echo "+ Compilando programa \"$@\""
+	@$(CC) $(CFLAGS) $(OBJS_EMULADOR) -o bin/emulador
+
+
+# Objetos
+
+build/%.o: src/emulador/%.c src/emulador/%.h
+	@echo "- Compilando objeto \"$@\""
+	@$(CC) -c $(CFLAGS) $< -o $@
+
+build/%.o: src/emulador/%.c
 	@echo "- Compilando objeto \"$@\""
 	@$(CC) -c $(CFLAGS) $< -o $@
 
